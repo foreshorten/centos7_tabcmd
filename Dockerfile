@@ -1,18 +1,14 @@
 FROM centos/systemd
+
 ENV container docker
 
-RUN yum -y install systemd systemd-libs deltarpm
-
-RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo -so /etc/yum.repos.d/mssql-release.repo && \
+RUN yum install -y https://downloads.tableau.com/esdalt/2019.2.0/tableau-tabcmd-2019-2-0.noarch.rpm deltarpm && \
 yum update -y && \
-ACCEPT_EULA=Y yum install -y mssql-tools unixODBC-devel && \
 yum clean all
 
-RUN  ln -s /opt/mssql-tools/bin/sqlcmd /usr/local/sbin/sqlcmd && \
-     ln -s /opt/mssql-tools/bin/bcp /usr/local/sbin/bcp
+RUN  ln -s /opt/tableau/tabcmd/bin/tabcmd /usr/local/sbin/tabcmd  &&\
+tabcmd --accepteula > /dev/null
 
-#VOLUME [ "/sys/fs/cgroup" ]
+VOLUME [ "/sys/fs/cgroup" ]
+
 CMD ["/usr/sbin/init"]
-
-
-#docker run -d --rm -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run:/var/run foreshorten/centos7-mssql-tools
